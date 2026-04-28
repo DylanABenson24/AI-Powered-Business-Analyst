@@ -211,12 +211,12 @@ if is_numeric:
     default_val = float(df[column].mean())
 
     min_range, max_range = st.sidebar.slider(
-    "Filter Range",
-    min_value=min_val,
-    max_value=max_val,
-    value=(min_val, max_val)
+        "Filter Range",
+        min_value=min_val,
+        max_value=max_val,
+        value=(min_val, max_val)
     )
-    
+
     filtered_df = df[
         (df[column] >= min_range) & (df[column] <= max_range)
     ].copy()
@@ -225,21 +225,17 @@ else:
     unique_vals = df[column].dropna().unique().tolist()
 
     selected_vals = st.sidebar.multiselect(
-        f"Select Categories for {column}",
+        "Select Categories",
         options=unique_vals,
-        key=f"category_filter_{column}"
+        default=unique_vals[:min(3, len(unique_vals))]
     )
-    
-    # Filtering logic
-    if selected_vals:
-        filtered_df = df[df[column].isin(selected_vals)].copy()
-    else:
-        filtered_df = df.copy()
 
+    filtered_df = (
+        df[df[column].isin(selected_vals)].copy()
+        if selected_vals else df.copy()
+    )
 
-
-    # filtered_df = df[df[column].isin(selected_vals)].copy() if selected_vals else df.copy()
-
+# ================= NUMERIC DATA =================
 numeric_df = get_numeric_df(filtered_df)
 
 # ================= METRICS =================

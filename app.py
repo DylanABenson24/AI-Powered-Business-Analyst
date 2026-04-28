@@ -227,8 +227,10 @@ else:
     selected_vals = st.sidebar.multiselect(
     "Select Categories",
     options=unique_vals,
-    default=[]
-)
+    default=[],
+    key=f"category_filter_{column}"
+    )
+
 
     filtered_df = df[df[column].isin(selected_vals)].copy() if selected_vals else df.copy()
 

@@ -334,35 +334,54 @@ with tab3:
                 except Exception as e:
                     st.error(f"API error: {e}")
 
-# ================= TAB 4 =================
-with tab4:
-    st.subheader("Segmentation")
+# ================= TAB 4 =================with tab4:
+    st.subheader("Segmentation (Customizable)")
 
-    if numeric_df.shape[1] < 2:
+    numeric_columns = df.select_dtypes(include=["number"]).columns.tolist()
+
+    if len(numeric_columns) < 2:
         st.warning("Need at least 2 numeric columns for clustering.")
     else:
-        k = st.slider("Select Number of Clusters", 2, 6, 3)
+        # 🔥 USER SELECTS FEATURES
+        selected_features = st.multiselect(
+            "Select features for clustering",
+            options=numeric_columns,
+            default=numeric_columns[:3] if len(numeric_columns) >= 3 else numeric_columns
+        )
 
-        if st.button("Run Clustering"):
-            try:
-                clustered = run_clustering(numeric_df, k)
+        if len(selected_features) < 2:
+            st.warning("Select at least 2 features.")
+        else:
+            # Prepare data (handle missing)
+            cluster_data = df[selected_features].dropna()
 
-                st.write("Clustered Data Preview")
-                st.dataframe(clustered.head(), use_container_width=True)
+            st.write(f"Using {len(cluster_data)} rows after removing missing values.")
 
-                x_col = clustered.columns[0]
-                y_col = clustered.columns[1]
+            k = st.slider("Select Number of Clusters", 2, 6, 3)
 
-                fig = px.scatter(
-                    clustered,
-                    x=x_col,
-                    y=y_col,
-                    color="Cluster",
-                    title="Cluster Visualization"
-                )
-                st.plotly_chart(fig, use_container_width=True)
-            except Exception as e:
-                st.error(f"Clustering error: {e}")
+            if st.button("Run Clustering"):
+                try:
+                    clustered = run_clustering(cluster_data, k)
+
+                    st.write("Clustered Data Preview")
+                    st.dataframe(clustered.head(), use_container_width=True)
+
+                    # 🔥 USER SELECTS VISUALIZATION AXES
+                    x_axis = st.selectbox("X-axis", selected_features, index=0)
+                    y_axis = st.selectbox("Y-axis", selected_features, index=1)
+
+                    fig = px.scatter(
+                        clustered,
+                        x=x_axis,
+                        y=y_axis,
+                        color="Cluster",
+                        title=f"Clustering: {x_axis} vs {y_axis}"
+                    )
+
+                    st.plotly_chart(fig, use_container_width=True)
+
+                except Exception as e:
+                    st.error(f"Clustering error: {e}")
 
 # ================= DOWNLOAD =================
 st.markdown("---")

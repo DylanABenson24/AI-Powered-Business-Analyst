@@ -334,7 +334,8 @@ with tab3:
                 except Exception as e:
                     st.error(f"API error: {e}")
 
-# ================= TAB 4 =================with tab4:
+# ================= TAB 4 =================
+with tab4:
     st.subheader("Segmentation (Customizable)")
 
     numeric_columns = df.select_dtypes(include=["number"]).columns.tolist()

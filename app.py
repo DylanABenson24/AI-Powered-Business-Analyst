@@ -48,7 +48,11 @@ def load_hf_client():
 # ================= DATA LOADING =================
 @st.cache_data
 def load_uploaded_data(uploaded_file) -> pd.DataFrame:
-    return pd.read_csv(uploaded_file)
+    df = pd.read_csv(
+        uploaded_file,
+        na_values=["?", "NA", "N/A", "null", "NULL", "nan", "NaN", ""]
+    )
+    return df
 
 # ================= PREPROCESS =================
 def get_numeric_df(data: pd.DataFrame) -> pd.DataFrame:

@@ -225,10 +225,10 @@ else:
     unique_vals = df[column].dropna().unique().tolist()
 
     selected_vals = st.sidebar.multiselect(
-        "Select Categories",
-        options=unique_vals,
-        default=unique_vals[:min(3, len(unique_vals))]
-    )
+    "Select Categories",
+    options=unique_vals,
+    default=[]
+)
 
     filtered_df = df[df[column].isin(selected_vals)].copy() if selected_vals else df.copy()
 
